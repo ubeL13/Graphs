@@ -1,0 +1,10 @@
+# ninja log v5
+6	4523	7391992866084241	build.ninja	a561a57c0e09bfff
+0	2084	7392013294323479	CMakeFiles/Graphs-main.dir/main.cpp.obj	97eab3b209d29a60
+2087	2375	7392013297203019	Graphs-main.exe	8a94c2cfd3f9c823
+7	2013	7392019169760077	CMakeFiles/Graphs-main.dir/main.cpp.obj	97eab3b209d29a60
+2014	2268	7392019172286172	Graphs-main.exe	8a94c2cfd3f9c823
+5	2142	7392021535731826	CMakeFiles/Graphs-main.dir/main.cpp.obj	97eab3b209d29a60
+2143	2410	7392021538393787	Graphs-main.exe	8a94c2cfd3f9c823
+3	1170	7392032007305184	CMakeFiles/Graphs-main.dir/main.cpp.obj	97eab3b209d29a60
+1171	1326	7392032008846223	Graphs-main.exe	8a94c2cfd3f9c823

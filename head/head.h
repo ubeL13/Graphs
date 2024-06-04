@@ -81,4 +81,64 @@ public:
     std::vector<Edge> edges(const Vertex &vertex) {
         return adj_list[vertex];
     }
+
+    size_t order() const {
+        return adj_list.size();
+    }
+
+    size_t degree(const Vertex &v) const {
+        if (!has_vertex(v)) return 0;
+        return adj_list.at(v).size();
+    }
+    std::vector<Edge> shortest_path(const Vertex &source, const Vertex &target) const {
+        std::map<Vertex, Distance> distances;
+        std::map<Vertex, Vertex> predecessors;
+        std::priority_queue<std::pair<Distance, Vertex>, std::vector<std::pair<Distance, Vertex>>, std::greater<>> queue;
+
+        for (const auto &node : adj_list) {
+            distances[node.first] = std::numeric_limits<Distance>::infinity();
+        }
+        distances[source] = 0;
+
+        queue.push(std::make_pair(0, source));
+
+        while (!queue.empty()) {
+            Vertex current = queue.top().second;
+            queue.pop();
+
+            if (current == target) {
+                break;
+            }
+
+            for (const Edge &edge : adj_list.at(current)) {
+                Vertex neighbor = edge.to;
+                Distance new_dist = distances[current] + edge.distance;
+                if (new_dist < distances[neighbor]) {
+                    distances[neighbor] = new_dist;
+                    predecessors[neighbor] = current;
+                    queue.push(std::make_pair(new_dist, neighbor));
+                }
+            }
+        }
+
+        std::vector<Edge> path;
+        if (distances[target] == std::numeric_limits<Distance>::infinity()) {
+            return path;
+        }
+
+        for (Vertex v = target; v != source; v = predecessors[v]) {
+            Vertex u = predecessors[v];
+            auto it = std::find_if(adj_list.at(u).begin(), adj_list.at(u).end(), [&v](const Edge &e) {
+                return e.to == v;
+            });
+            if (it != adj_list.at(u).end()) {
+                path.push_back(*it);
+            }
+        }
+
+        std::reverse(path.begin(), path.end());
+        return path;
+    }
+
 };
+

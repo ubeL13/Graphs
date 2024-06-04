@@ -2,10 +2,8 @@
 #include "head.h"
 
 int main() {
-    // Создание графа
     Graph<char> graph;
 
-    // Добавление вершин
     graph.add_vertex('A');
     graph.add_vertex('B');
     graph.add_vertex('C');
@@ -28,6 +26,28 @@ int main() {
 
     std::cout << "Graph has edge from 'A' to 'B': " << graph.has_edge('A', 'B') << std::endl;
     std::cout << "Graph has edge from 'A' to 'E': " << graph.has_edge('A', 'E') << std::endl;
+
+    std::cout << "Order of graph: " << graph.order() << std::endl;
+    std::cout << "Degree of vertex 'A': " << graph.degree('A') << std::endl;
+
+    graph.remove_edge('A', 'B');
+    graph.remove_vertex('E');
+
+    std::cout << "Edge from 'A' to 'B' and vertex 'E' removed." << std::endl;
+
+    std::cout << "Order of graph after removals: " << graph.order() << std::endl;
+    std::cout << "Degree of vertex 'A' after removals: " << graph.degree('A') << std::endl;
+
+
+    char startVertex = 'A';
+    char endVertex = 'D';
+
+    std::vector<Graph<char>::Edge> path = graph.shortest_path(startVertex, endVertex);
+
+    std::cout << "Shortest path from " << startVertex << " to " << endVertex << ":" << std::endl;
+    for (const auto& edge : path) {
+        std::cout << edge.from << " -> " << edge.to << " (Distance: " << edge.distance << ")" << std::endl;
+    }
 
     return 0;
 }

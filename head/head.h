@@ -142,3 +142,34 @@ public:
 
 };
 
+template<typename Vertex, typename Distance>
+Vertex find_optimal_storage(Graph<Vertex, Distance>& graph) {
+    Distance min_average_distance = std::numeric_limits<Distance>::infinity();
+    Vertex optimal_storage_vertex;
+
+    for (const Vertex& vertex : graph.vertices()) {
+        Distance total_distance = 0;
+        int reachable_vertices = 0;
+
+        for (const Vertex& target : graph.vertices()) {
+            if (vertex == target) continue;
+            std::vector<typename Graph<Vertex, Distance>::Edge> path = graph.shortest_path(vertex, target);
+
+            for (const auto& edge : path) {
+                total_distance += edge.distance;
+            }
+
+            reachable_vertices++;
+        }
+
+        Distance average_distance = total_distance / reachable_vertices;
+
+        if (average_distance < min_average_distance) {
+            min_average_distance = average_distance;
+            optimal_storage_vertex = vertex;
+        }
+    }
+
+    return optimal_storage_vertex;
+}
+

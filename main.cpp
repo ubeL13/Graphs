@@ -48,6 +48,8 @@ int main() {
     for (const auto& edge : path) {
         std::cout << edge.from << " -> " << edge.to << " (Distance: " << edge.distance << ")" << std::endl;
     }
+    char optimal_storage = find_optimal_storage(graph);
+    std::cout << "Optimal storage location is at vertex: " << optimal_storage << std::endl;
 
     return 0;
 }

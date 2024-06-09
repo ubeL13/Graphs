@@ -7,6 +7,7 @@
 #include <set>
 #include <memory>
 #include <map>
+#include <stack>
 
 template<typename Vertex, typename Distance = double>
 class Graph {
@@ -21,15 +22,20 @@ public:
     };
 
 private:
-    struct VertexComparator {
-        bool operator()(const std::pair<Distance, Vertex> &a, const std::pair<Distance, Vertex> &b) const {
-            return a.first > b.first;
-        }
-    };
+
 
     std::unordered_map<Vertex, std::vector<Edge>> adj_list;
 
 public:
+    void print_edges() const {
+        for (const auto &pair : adj_list) {
+            const Vertex &from = pair.first;
+            const std::vector<Edge> &edges = pair.second;
+            for (const Edge &edge : edges) {
+                std::cout << "rebro is " << edge.from << " v " << edge.to << " with distance " << edge.distance << std::endl;
+            }
+        }
+    }
     bool has_vertex(const Vertex &v) const {
         return adj_list.find(v) != adj_list.end();
     }
@@ -58,6 +64,10 @@ public:
     }
 
     void add_edge(const Vertex &from, const Vertex &to, const Distance &d) {
+        if (d < 0) {
+            std::cerr << "Нельзя добавить ребро с отрицательным весом (" << d << ")." << std::endl;
+            return;
+        }
         adj_list[from].emplace_back(from, to, d);
     }
 
@@ -78,9 +88,17 @@ public:
         return std::any_of(edges.begin(), edges.end(), [&to](const Edge &e) { return e.to == to; });
     }
 
-    std::vector<Edge> edges(const Vertex &vertex) {
-        return adj_list[vertex];
+    const std::vector<Edge>& edges(const Vertex &vertex) const {
+
+        auto it = adj_list.find(vertex);
+        if (it != adj_list.end()) {
+            return it->second;
+        } else {
+            static const std::vector<Edge> empty_vector;
+            return empty_vector;
+        }
     }
+
 
     size_t order() const {
         return adj_list.size();
@@ -110,7 +128,7 @@ public:
                 break;
             }
 
-            for (const Edge &edge : adj_list.at(current)) {
+            for (const Edge &edge : edges(current)) {
                 Vertex neighbor = edge.to;
                 Distance new_dist = distances[current] + edge.distance;
                 if (new_dist < distances[neighbor]) {
@@ -139,7 +157,56 @@ public:
         std::reverse(path.begin(), path.end());
         return path;
     }
+    std::vector<Vertex> walk(const Vertex& source)  {
+        std::unordered_map<Vertex, bool> visited;
+        for (auto const& item: adj_list) {
+            visited[item.first] = false;
+        }
+        std::queue<Vertex> q;
+        visited[source] = true;
+        q.push(source);
 
+        std::vector<Vertex> result;
+        while(!q.empty()) {
+            Vertex vertex = q.front();
+            q.pop();
+            result.push_back(vertex);
+            const std::vector<Edge>& edges_list = edges(vertex);
+            for (const Edge &i : edges_list) {
+                if (!visited[i.to]) {
+                    q.push(i.to);
+                    visited[i.to] = true;
+                }
+            }
+        }
+        return result;
+    }
+
+
+    bool dfs(Vertex v, std::unordered_map<Vertex, bool> &visited, std::unordered_map<Vertex, bool> &recStack) const {
+        if(!visited[v]) {
+            visited[v] = true;
+            recStack[v] = true;
+            for(const Edge &edge : adj_list.at(v)) {
+                Vertex neighbor = edge.to;
+                if (!visited[neighbor] && dfs(neighbor, visited, recStack))
+                    return true;
+                else if (recStack[neighbor])
+                    return true;
+            }
+        }
+        recStack[v] = false;
+        return false;
+    }
+    bool has_cycle() const {
+        std::unordered_map<Vertex, bool> visited;
+        std::unordered_map<Vertex, bool> recStack;
+        for (const auto &node : adj_list) {
+            if (dfs(node.first, visited, recStack))
+                return true;
+        }
+        return false;
+    }
 };
 
 template<typename Vertex, typename Distance>
